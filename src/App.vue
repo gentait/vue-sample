@@ -1,13 +1,15 @@
 <template>
   <c-theme-provider>
     <c-reset />
-    <!--Your application goes here -->
+    <Main />
   </c-theme-provider>
 </template>
 
 <script>
+import Main from "./pages/Main.vue";
 
 export default {
   name: "App",
+  components: { Main },
 };
 </script>
