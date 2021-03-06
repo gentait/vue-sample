@@ -1,13 +1,20 @@
 <template>
   <div>
-    <c-heading>{{ title }}</c-heading>
+    <keep-alive>
+      <c-input
+        v-if="isEditMode"
+        placeholder="Basic usage"
+        v-model="inputTitle"
+      />
+      <c-heading v-else>{{ inputTitle }}</c-heading>
+    </keep-alive>
     <c-button variant-color="blue" size="md" @click="togglePreview">{{
       this.isEditMode ? "Preview" : "Edit"
     }}</c-button>
     <keep-alive>
-      <c-textarea v-if="isEditMode" v-model="input" :value="input" />
+      <c-textarea v-if="isEditMode" v-model="inputText" :value="inputText" />
       <c-box v-else p="10px">
-        <mark-down-viewer :rawtext="input" />
+        <mark-down-viewer :rawtext="inputText" />
       </c-box>
     </keep-alive>
     <c-button variant-color="blue" size="md" @click="save">Save</c-button>
@@ -18,13 +25,22 @@
 import MarkDownViewer from "./MarkDownViewer.vue";
 export default {
   components: { MarkDownViewer },
-  props: ["title", "text"],
+  props: ["title", "text", "editMode"],
   data: function () {
-    return { input: this.text, isEditMode: true };
+    return {
+      inputTitle: this.title,
+      inputText: this.text,
+      isEditMode: this.editMode ?? false,
+    };
   },
   watch: {
     text: function () {
-      this.input = this.text;
+      this.inputText = this.text;
+      this.isEditMode = false;
+    },
+    title: function () {
+      this.inputTitle = this.title;
+      this.isEditMode = false;
     },
   },
   methods: {
@@ -32,7 +48,7 @@ export default {
       this.isEditMode = !this.isEditMode;
     },
     save() {
-      this.$emit("save", { title: this.title, content: this.input });
+      this.$emit("save", { title: this.inputTitle, content: this.inputText });
     },
   },
 };
